@@ -1,0 +1,141 @@
+<md-sidenav-container>
+    <div class="container">
+        <md-grid-list cols="4" rowHeight="4:1">
+
+            <md-grid-tile [colspan]="4">
+                <h2 align="center">{{title}}</h2>
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <md-input-container class="full-width">
+                    <input mdInput [mdDatepicker]="FromDate" placeholder="From Date" [formControl]="fromDate">
+                    <button mdSuffix [mdDatepickerToggle]="FromDate"></button>
+                </md-input-container>
+                <md-datepicker #FromDate></md-datepicker>
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <md-input-container class="full-width">
+                    <input mdInput [mdDatepicker]="ToDate" placeholder="To Date" [formControl]="toDate">
+                    <button mdSuffix [mdDatepickerToggle]="ToDate"></button>
+                </md-input-container>
+                <md-datepicker #ToDate></md-datepicker>
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <button (click)="search()" md-raised-button color="primary"><i class="material-icons">search</i> Search</button>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1">
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <md-input-container class="full-width">
+                    <input mdInput type='text' placeholder='Filter Record' (keyup)='updateFilter($event)' />
+                </md-input-container>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1">
+                <button (click)="openDialog()" md-raised-button [disabled]="checkedItems.length == 0" color="warn"><i class="material-icons">delete</i> Delete</button>
+            </md-grid-tile>
+        </md-grid-list>
+
+        <ngx-datatable class="material" [rows]="purchaseRecords" [columnMode]="'force'" [sortType]="'single'" [headerHeight]="50" [footerHeight]="50"
+            [rowHeight]="40" [selected]="checkedItems" [selectionType]="'checkbox'" (select)='onSelect($event)' [limit]="6">
+
+            <ngx-datatable-column [width]="60" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+                    <md-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" [(ngModel)]="selectAllToggle"></md-checkbox>
+                </ng-template>
+                <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+                    <md-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)"></md-checkbox>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column prop="BillNo" name="Bill Number"></ngx-datatable-column>
+            <ngx-datatable-column prop="BillDate" name="Bill Date"></ngx-datatable-column>
+            <ngx-datatable-column prop="Supplier" name="Supplier"></ngx-datatable-column>
+            <ngx-datatable-column prop="Items" name="Items"></ngx-datatable-column>
+            <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                    <a routerLink="." mdTooltip="View record" (click)="viewRecord(row)"><i class="material-icons">remove_red_eye</i></a>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                    <a routerLink="." mdTooltip="Edit Record" (click)="editRecord(row)"><i class="material-icons">mode_edit</i></a>
+                    <!-- <button md-icon-button>
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button> -->
+                </ng-template>
+                <!-- <a md-button routerLink="/record/Sales"><span class="glyphicon glyphicon-pencil"></span></a> -->
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+    <md-sidenav align="end" mode="push" #sidenav class="viewRecord">
+        <div style="padding-bottom:5px;">
+            <button style="float:right" md-icon-button color="warn" (click)="sidenav.close()"><i class="material-icons">close</i></button>
+            <h3>View Record</h3>
+        </div>
+        <md-card>
+            <div class="view-container">
+
+                <md-grid-list cols="4" rowHeight="4:1">
+                    <md-grid-tile [colspan]="1">
+                        <label>Bill Number:</label>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <md-input-container class="full-width">
+                            <input mdInput placeholder="Bill Number" disabled [value]="view_BillNo">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <label>Bill Date:</label>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <md-input-container class="full-width">
+                            <input mdInput placeholder="Bill Date" disabled [value]="view_BillDate">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <label>Supplier</label>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <md-input-container class="full-width">
+                            <input mdInput placeholder="Supplier" disabled [value]="view_Supplier">
+                        </md-input-container>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <button (click)="search()" md-raised-button><i class="material-icons">mode_edit</i> Edit Record</button>
+                    </md-grid-tile>
+                    <md-grid-tile [colspan]="1">
+                        <button (click)="openDialog()" md-raised-button color="warn"><i class="material-icons">delete</i> Delete Record</button>
+                    </md-grid-tile>
+                </md-grid-list>
+            </div>
+        </md-card>
+        <ngx-datatable style="margin-top:7px;margin-bottom:7px;" class="material" [rows]="view_Items" [columnMode]="'force'" [headerHeight]="50"
+            [footerHeight]="50" [rowHeight]="50">
+            <ngx-datatable-column prop="Pname" name="Name"></ngx-datatable-column>
+            <ngx-datatable-column prop="manufacturer" name="manufacturer"></ngx-datatable-column>
+            <ngx-datatable-column prop="type" name="Type">
+                <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                    {{value == true ? "Gen" : "Non-gen"}}
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column prop="tax_percent" name="Tax"></ngx-datatable-column>
+            <ngx-datatable-column prop="BatchNo" name="Batch"></ngx-datatable-column>
+            <ngx-datatable-column prop="Exp_date" name="Exp Date"></ngx-datatable-column>
+            <ngx-datatable-column prop="qty" name="Quantity"></ngx-datatable-column>
+            <ngx-datatable-column prop="mrp" name="MRP"></ngx-datatable-column>
+            <ngx-datatable-column prop="P_rate" name="Rate"></ngx-datatable-column>
+        </ngx-datatable>
+    </md-sidenav>
+</md-sidenav-container>
+<!-- // Pid: string;
+// Pname: string;
+// manufacturer: string;
+// type: boolean;
+// tax_percent: number;
+// BatchNo: string;
+// Exp_date: string;
+// qty: number;
+// mrp: number;
+// P_rate: number; -->

@@ -1,0 +1,102 @@
+<md-sidenav-container>
+    <div class="container">
+        <md-grid-list cols="8" rowHeight="4:2">
+            <md-grid-tile [colspan]="8">
+                <h4 align="center">Payment</h4>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1">
+                <label>Choose supplier</label>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1">
+                <md-select [(ngModel)]="selSupplier">
+                    <md-option *ngFor="let item of suppliersList" [value]="item.id">
+                        {{ item.name }}
+                    </md-option>
+                </md-select>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="5">
+            </md-grid-tile>
+        </md-grid-list>
+        <date-filter (clearDateFilterEvent)="clearFilter($event)" [supplierId]="selSupplier" (fetchRecordEvent)="fetchRecords($event)"
+            cols="8" rowHeight="4:2" colspan="2" [page]="{page:'supplierPayment',type: ''}"></date-filter>
+
+        <ngx-datatable class="material" [rows]="purchaseRecords" [columnMode]="'force'" [sortType]="'single'" [headerHeight]="50"
+            [footerHeight]="50" [rowHeight]="40" [limit]="9" [selected]="checkedRecords" [selectionType]="'checkbox'">
+
+            <ngx-datatable-column [width]="40" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                <ng-template style="width: 35px;" ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+                    <md-checkbox [checked]="allRowsSelected" (change)="selectFn(allRowsSelected)" [(ngModel)]="selectAllToggle"></md-checkbox>
+                </ng-template>
+                <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+                    <md-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)" (change)="calcTotal()"></md-checkbox>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column prop="BillNo" name="Bill Number"></ngx-datatable-column>
+            <ngx-datatable-column prop="BillDate" name="Bill Date"></ngx-datatable-column>
+            <ngx-datatable-column prop="Items" name="Items"></ngx-datatable-column>
+            <ngx-datatable-column prop="Purchase_amt" name="Purchase Amt"></ngx-datatable-column>
+            <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+                <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+                    <a routerLink="." mdTooltip="Peek record" (click)="viewRecord(row)">
+                        <i class="material-icons">remove_red_eye</i>
+                    </a>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-footer>
+                <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-selectedCount="selectedCount">
+                    <div style="width:100%">
+                        <div class="col-md-3">
+                            <h6>Selected: {{selectedCount}}/{{rowCount}}</h6>
+                        </div>
+                        <div class="col-lg-offset-5 col-md-1">
+                            <h6>Total: </h6>
+                        </div>
+                        <div class="col-md-3">
+                            <input disabled [(ngModel)]="totalAmount" class="form-control">
+                        </div>
+
+                    </div>
+                </ng-template>
+            </ngx-datatable-footer>
+        </ngx-datatable>
+        <!-- End of Records -->
+        <md-grid-list cols="7" rowHeight="4:2">
+            <md-grid-tile [colspan]="3">
+                <md-input-container class="full-width">
+                    <input mdInput placeholder="Invoice Number" [formControl]="invoiceNo">
+                    <md-error *ngIf="invoiceNo.hasError('required')">
+                        Invoice number is
+                        <strong>required</strong>
+                    </md-error>
+                </md-input-container>
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <md-input-container>
+                    <input mdInput [mdDatepicker]="picker" placeholder="Invoice Date" [formControl]="invoiceDate">
+                    <md-error *ngIf="invoiceDate.hasError('required')">
+                        Invoice date is
+                        <strong>required</strong>
+                    </md-error>
+                    <button mdSuffix [mdDatepickerToggle]="picker"></button>
+                </md-input-container>
+                <md-datepicker #picker></md-datepicker>
+            </md-grid-tile>
+
+            <md-grid-tile [colspan]="1">
+                <button (click)="payment()" md-raised-button title="Confirm Payment" color="primary">Pay</button>
+            </md-grid-tile>
+        </md-grid-list>
+    </div>
+    <md-sidenav align="end" mode="push" #sidenav class="viewRecord">
+        <div style="padding-bottom:5px;">
+            <button style="float:right" md-icon-button color="warn" (click)="sidenav.close()">
+                <i class="material-icons">close</i>
+            </button>
+            <h3>View Record</h3>
+        </div>
+        <peek-record [billId]="view_Id" [billNo]="view_BillNo" [billDate]="view_BillDate" [supplier]="view_Supplier" type="Purchase"
+            [billAmt]="view_BillAmt" (deleteRecordEvent)="deleteRecord($event)"></peek-record>
+    </md-sidenav>
+</md-sidenav-container>

@@ -1,0 +1,40 @@
+{
+    "RecordDetail": {
+        "Id": "",
+        "BillNo": "12fcd f",
+        "BillDate": "2017-10-1",
+        "Customer": "12",
+        "Items": ""
+    },
+    "Items": [
+        {
+            "Pid": "P59de13644cc032.09052365",
+            "Pname": "Shelcal",
+            "manufacturer": "Shelcal",
+            "type": true,
+            "tax_percent": "12.00",
+            "BatchNo": [
+                "CFG45WE"
+            ],
+            "qty": 1,
+            "Batches": [
+                {
+                    "BatchNumber": "CFG45WE",
+                    "Exp_date": "09/2019",
+                    "mrp": 3,
+                    "stock": 53,
+                    "P_rate": 1.5,
+                    "show": true,
+                    "batchQty": 1,
+                    "batchValue": 3
+                }
+            ],
+            "Exp_date": "",
+            "mrp": 0,
+            "P_rate": 0,
+            "stock": 53,
+            "value": 3,
+            "toggleVisible": false
+        }
+    ]
+}
